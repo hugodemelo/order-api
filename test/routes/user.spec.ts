@@ -36,7 +36,7 @@ describe("userRoute", () => {
                 expect(res.body.username).to.be.equal(user.username);
             });
     });
-    it("it should return the user created on the previous step", async () => {
+    it("should return the user created on the previous step", async () => {
         return chai
             .request(app)
             .get(`/users/${user.username}`)
