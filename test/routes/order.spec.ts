@@ -46,6 +46,33 @@ describe("orderRoute", () => {
                 expect(res.body.status).to.be.equal(order.status);
             });
     });
+    it("should return all orders so far", async () => {
+        return chai
+            .request(app)
+            .get(`/store/orders`)
+            .then(res => {
+                expect(res.status).to.be.equal(200);
+                expect(res.body.length).to.be.equal(1);
+            });
+    });
+    it("should return all orders that are PLACED", async () => {
+        return chai
+            .request(app)
+            .get(`/store/orders?status=PLACED`)
+            .then(res => {
+                expect(res.status).to.be.equal(200);
+                expect(res.body.length).to.be.equal(1);
+            });
+    });
+    it("should return no orders that are DELIVERED", async () => {
+        return chai
+            .request(app)
+            .get(`/store/orders?status=DELIVERED`)
+            .then(res => {
+                expect(res.status).to.be.equal(200);
+                expect(res.body.length).to.be.equal(0);
+            });
+    });
     it("should remove an existing order", async () => {
         return chai
             .request(app)

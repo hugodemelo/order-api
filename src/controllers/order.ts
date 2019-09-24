@@ -12,6 +12,12 @@ export const getOrder = (req: Request, res: Response, next: NextFunction) => {
     return res.status(httpCode).send(order);
 };
 
+export const getAllOrders = (req: Request, res: Response, next: NextFunction) => {
+    const status = req.query.status;
+    const filteredOrders = status ? orders.filter(order => order.status === status) : orders;
+    return res.status(200).send(filteredOrders);
+};
+
 export const addOrder = (req: Request, res: Response, next: NextFunction) => {
     const order: Order = {
         complete: false,
