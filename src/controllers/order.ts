@@ -1,15 +1,20 @@
 import { NextFunction, Request, Response } from "express";
 import { Order, OrderStatus } from "../model/order";
-import { buildResponse, HttpCode } from "../utils";
+import { buildResponse, HttpCode, LinkBuilder } from "../utils";
 
 let orders: Array<Order> = [];
 
 const getOrderFromList = (id: string): Order => orders.find(obj => obj.id === Number(id));
 
 export const getOrder = (req: Request, res: Response, next: NextFunction) => {
-    const order = getOrderFromList(req.params.id);
+    let order = getOrderFromList(req.params.id);
 
-    const httpCode = order ? HttpCode.OK : HttpCode.NOT_FOUND;
+    let httpCode = HttpCode.NOT_FOUND;
+    if (order) {
+        httpCode = HttpCode.OK;
+        order = new LinkBuilder(order).rel("self").orders().id(order.id).build();
+        order = new LinkBuilder(order).rel("user").users().id(order.userId).build();
+    }
     return buildResponse(res, order, httpCode);
 };
 

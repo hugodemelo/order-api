@@ -1,4 +1,5 @@
 import { Response } from "express";
+import * as halson from "halson";
 
 export enum ApplicationType {
     JSON = "application/json"
@@ -32,3 +33,34 @@ export const buildResponse = (
         }
     });
 };
+
+export class LinkBuilder<T> {
+    private uri: string = "";
+    private related: string = "";
+
+    constructor(private readonly entity: T) {}
+
+    orders(): this {
+        this.uri = this.uri.concat("/store/orders");
+        return this;
+    }
+
+    users(): this {
+        this.uri = this.uri.concat("/users");
+        return this;
+    }
+
+    id(id: string | number): this {
+        this.uri = this.uri.concat(`/${id}`);
+        return this;
+    }
+
+    rel(rel: string): this {
+        this.related = rel;
+        return this;
+    }
+
+    build(): T {
+        return halson(this.entity).addLink(this.related, this.uri);
+    }
+}
