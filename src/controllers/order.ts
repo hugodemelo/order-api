@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { Order, OrderStatus } from "../model/order";
+import { buildResponse, HttpCode } from "../utils";
 
 let orders: Array<Order> = [];
 
@@ -7,15 +8,15 @@ const getOrderFromList = (id: string): Order => orders.find(obj => obj.id === Nu
 
 export const getOrder = (req: Request, res: Response, next: NextFunction) => {
     const order = getOrderFromList(req.params.id);
-    
-    const httpCode = order ? 200 : 404;
-    return res.status(httpCode).send(order);
+
+    const httpCode = order ? HttpCode.OK : HttpCode.NOT_FOUND;
+    return buildResponse(res, order, httpCode);
 };
 
 export const getAllOrders = (req: Request, res: Response, next: NextFunction) => {
     const status = req.query.status;
     const filteredOrders = status ? orders.filter(order => order.status === status) : orders;
-    return res.status(200).send(filteredOrders);
+    return buildResponse(res, filteredOrders, HttpCode.OK);
 };
 
 export const addOrder = (req: Request, res: Response, next: NextFunction) => {
@@ -28,7 +29,7 @@ export const addOrder = (req: Request, res: Response, next: NextFunction) => {
         userId: req.body.userId
     };
     orders.push(order);
-    return res.status(201).send(order);
+    return buildResponse(res, order, HttpCode.CREATED);
 };
 
 export const removeOrder = (req: Request, res: Response, next: NextFunction) => {
@@ -39,5 +40,5 @@ export const removeOrder = (req: Request, res: Response, next: NextFunction) => 
     }
 
     orders = orders.filter(obj => obj.id !== order.id);
-    return res.status(204).send();
+    return buildResponse(res, {}, HttpCode.NO_CONTENT);
 };

@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { User } from "../model/user";
+import { buildResponse, HttpCode } from "../utils";
 
 let users: Array<User> = [];
 
@@ -7,9 +8,9 @@ const getUserFromList = (username: string): User => users.find(obj => obj.userna
 
 export const getUser = (req: Request, res: Response, next: NextFunction) => {
     const user = getUserFromList(req.params.username);
-    
-    const httpCode = user ? 200 : 404;
-    return res.status(httpCode).send(user);
+
+    const httpCode = user ? HttpCode.OK : HttpCode.NOT_FOUND;
+    return buildResponse(res, user, httpCode);
 };
 
 export const addUser = (req: Request, res: Response, next: NextFunction) => {
@@ -24,7 +25,7 @@ export const addUser = (req: Request, res: Response, next: NextFunction) => {
         username: req.body.username
     };
     users.push(user);
-    return res.status(201).send(user);
+    return buildResponse(res, user, HttpCode.CREATED);
 };
 
 export const updateUser = (req: Request, res: Response, next: NextFunction) => {
@@ -43,7 +44,7 @@ export const updateUser = (req: Request, res: Response, next: NextFunction) => {
     user.userStatus = body.userStatus || user.userStatus;
     user.username = body.username || user.username;
 
-    return res.status(204).send();
+    return buildResponse(res, {}, HttpCode.NO_CONTENT);
 };
 
 export const deleteUser = (req: Request, res: Response, next: NextFunction) => {
@@ -54,5 +55,5 @@ export const deleteUser = (req: Request, res: Response, next: NextFunction) => {
     }
 
     users = users.filter(obj => obj.username !== user.username);
-    return res.status(204).send();
+    return buildResponse(res, {}, HttpCode.NO_CONTENT);
 };
