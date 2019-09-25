@@ -28,7 +28,7 @@ export const updateUser = (req: Request, res: Response, next: NextFunction) => {
         if (!user) {
             return buildResponse(res, {}, HttpCode.NOT_FOUND);
         }
-        
+
         const { body } = req;
         user.email = body.email || user.email;
         user.firstName = body.firstName || user.firstName;
@@ -38,7 +38,7 @@ export const updateUser = (req: Request, res: Response, next: NextFunction) => {
         user.userStatus = body.userStatus || user.userStatus;
         user.username = body.username || user.username;
 
-        user.save(error => {buildResponse(res, {}, HttpCode.NO_CONTENT)});
+        user.save(error => buildResponse(res, {}, HttpCode.NO_CONTENT));
     });
 };
 
@@ -49,6 +49,6 @@ export const deleteUser = (req: Request, res: Response, next: NextFunction) => {
             return buildResponse(res, {}, HttpCode.NOT_FOUND);
         }
 
-        user.remove(error => {buildResponse(res, {}, HttpCode.NO_CONTENT)});
+        user.remove(error => buildResponse(res, {}, HttpCode.NO_CONTENT));
     });
 };

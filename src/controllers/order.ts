@@ -1,49 +1,54 @@
 import { NextFunction, Request, Response } from "express";
-import { Order, OrderStatus } from "../model/order";
+import { OrderModel } from "../schemas/order";
+import { UserModel } from "../schemas/user";
 import { buildResponse, HttpCode, LinkBuilder } from "../utils";
 
-let orders: Array<Order> = [];
-
-const getOrderFromList = (id: string): Order => orders.find(obj => obj.id === Number(id));
-
 export const getOrder = (req: Request, res: Response, next: NextFunction) => {
-    let order = getOrderFromList(req.params.id);
+    const orderId = req.params.id;
 
-    let httpCode = HttpCode.NOT_FOUND;
-    if (order) {
-        httpCode = HttpCode.OK;
+    OrderModel.findById(orderId, (err, order) => {
+        if (!order) {
+            return buildResponse(res, {}, HttpCode.NOT_FOUND);
+        }
+        order = order.toJSON();
         order = new LinkBuilder(order).rel("self").orders().id(order.id).build();
         order = new LinkBuilder(order).rel("user").users().id(order.userId).build();
-    }
-    return buildResponse(res, order, httpCode);
+        return buildResponse(res, order, HttpCode.OK);
+    })
 };
 
 export const getAllOrders = (req: Request, res: Response, next: NextFunction) => {
     const status = req.query.status;
-    const filteredOrders = status ? orders.filter(order => order.status === status) : orders;
-    return buildResponse(res, filteredOrders, HttpCode.OK);
+    const query = status ? { status: status } : { };
+    OrderModel.find(query, (err, orders) => {
+        return buildResponse(res, orders, HttpCode.OK);
+    });
 };
 
 export const addOrder = (req: Request, res: Response, next: NextFunction) => {
-    const order: Order = {
-        complete: false,
-        id: Math.floor(Math.random() * 100) + 1,
-        quantity: req.body.quantity,
-        shipDate: req.body.shipDate,
-        status: OrderStatus.Placed,
-        userId: req.body.userId
-    };
-    orders.push(order);
-    return buildResponse(res, order, HttpCode.CREATED);
+    const userId = req.body.userId;
+
+    UserModel.findById(userId, (err, user) => {
+        if (!user) {
+            return buildResponse(res, {}, HttpCode.NOT_FOUND);
+        }
+
+        const newOrder = new OrderModel(req.body);
+        newOrder.save((error, order) => {
+            order = order.toJSON();
+            order = new LinkBuilder(order).rel("self").orders().id(order._id).build();
+            order = new LinkBuilder(order).rel("user").users().id(order.userId).build();
+            return buildResponse(res, order, HttpCode.CREATED);
+        });
+    });
 };
 
 export const removeOrder = (req: Request, res: Response, next: NextFunction) => {
-    const order = getOrderFromList(req.params.id);
-
-    if (!order) {
-        return res.status(404).send();
-    }
-
-    orders = orders.filter(obj => obj.id !== order.id);
-    return buildResponse(res, {}, HttpCode.NO_CONTENT);
+    const orderId = req.params.id;
+    OrderModel.findById(orderId, (err, order) => {
+        if (!order) {
+            return buildResponse(res, {}, HttpCode.NOT_FOUND);
+        }
+        order.remove(error => buildResponse(res, {}, HttpCode.NO_CONTENT));
+    });
 };

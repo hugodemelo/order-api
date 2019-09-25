@@ -19,12 +19,10 @@ const user = {
 };
 
 describe("userRoute", () => {
-    
     before(async () => {
         expect(UserModel.modelName).to.be.equal("User");
         UserModel.collection.drop();
     });
-
     it("should respond with HTTP 404 since there is no user", async () => {
         return chai
             .request(app)
