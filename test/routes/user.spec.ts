@@ -2,16 +2,15 @@ import * as chai from "chai";
 import chaiHttp = require("chai-http");
 import "mocha";
 import app from "../../src/app";
-import { User } from "../../src/model/user";
+import { UserModel } from "../../src/schemas/user";
 
 chai.use(chaiHttp);
 
 const expect = chai.expect;
 
-const user: User = {
+const user = {
     email: "me@me.com",
     firstName: "Hugo",
-    id: Math.floor(Math.random() * 100) + 1,
     lastName: "Melo",
     password: "password",
     phone: "12345678",
@@ -20,6 +19,12 @@ const user: User = {
 };
 
 describe("userRoute", () => {
+    
+    before(async () => {
+        expect(UserModel.modelName).to.be.equal("User");
+        UserModel.collection.drop();
+    });
+
     it("should respond with HTTP 404 since there is no user", async () => {
         return chai
             .request(app)
