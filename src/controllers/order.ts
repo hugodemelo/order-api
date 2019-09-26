@@ -37,7 +37,7 @@ export const addOrder = (req: Request, res: Response, next: NextFunction) => {
         newOrder.save((error, order) => {
             order = order.toJSON();
             order = new LinkBuilder(order).rel("self").orders().id(order._id).build();
-            order = new LinkBuilder(order).rel("user").users().id(order.userId).build();
+            order = new LinkBuilder(order).rel("user").users().id(user.username).build();
             return buildResponse(res, order, HttpCode.CREATED);
         });
     });
