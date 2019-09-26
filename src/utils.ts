@@ -1,10 +1,6 @@
 import { Response } from "express";
 import * as halson from "halson";
 
-export enum ApplicationType {
-    JSON = "application/json"
-}
-
 export const enum HttpCode {
     OK = "200",
     CREATED = "201",
@@ -19,16 +15,14 @@ export const enum HttpCode {
 
 export const buildResponse = (
     res: Response,
-    data: any,
     statusCode: HttpCode,
-    applicationType: ApplicationType = ApplicationType.JSON
+    data: any = {}
 ): Response => {
     return res.format({
         default: () => {
             res.status(Number(HttpCode.NOT_ACCEPTABLE)).send();
         },
         json: () => {
-            res.type(applicationType);
             res.status(Number(statusCode)).send(data);
         }
     });

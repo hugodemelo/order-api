@@ -1,21 +1,24 @@
-# create order
+@token = 
+
+### Create order
 POST https://localhost:3000/store/orders HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
 	"complete": false,
     "quantity": 1,
     "shipDate": "2019-09-25T10:39:34.226Z",
     "status": "PLACED",
-    "userId": "5d8d0420a9b7d25406ef58e8"
+    "userId": "5d8d2d764edd8e6b537e23d7"
 }
 
-
-
-# get all orders
+### Get all orders
 GET https://localhost:3000/store/orders HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
-# get order
+### Get order
 GET https://localhost:3000/store/orders/5d8d042da9b7d25406ef58e9 HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer {{token}}

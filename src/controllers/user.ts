@@ -1,5 +1,6 @@
 import * as bcrypt from "bcrypt";
 import { NextFunction, Request, Response } from "express";
+import * as jwt from "jsonwebtoken";
 import { UserModel } from "../schemas/user";
 import { buildResponse, HttpCode, LinkBuilder } from "../utils";
 
@@ -7,10 +8,10 @@ export const getUser = (req: Request, res: Response, next: NextFunction) => {
     const username = req.params.username;
     UserModel.findOne({ username: username }, (err, user) => {
         if (!user) {
-            return buildResponse(res, {}, HttpCode.NOT_FOUND);
+            return buildResponse(res, HttpCode.NOT_FOUND);
         }
         user = new LinkBuilder(user.toJSON()).rel("self").users().id(user.username).build();
-        return buildResponse(res, user, HttpCode.OK);
+        return buildResponse(res, HttpCode.OK, user);
     });
 };
 
@@ -20,7 +21,7 @@ export const addUser = (req: Request, res: Response, next: NextFunction) => {
     newUser.password = bcrypt.hashSync(newUser.password, 10);
     newUser.save((err, user) => {
         user = new LinkBuilder(user.toJSON()).rel("self").users().id(user.username).build();
-        return buildResponse(res, user, HttpCode.CREATED);
+        return buildResponse(res, HttpCode.CREATED, user);
     });
 };
 
@@ -29,7 +30,7 @@ export const updateUser = (req: Request, res: Response, next: NextFunction) => {
 
     UserModel.findOne({ username: username }, (err, user) => {
         if (!user) {
-            return buildResponse(res, {}, HttpCode.NOT_FOUND);
+            return buildResponse(res, HttpCode.NOT_FOUND);
         }
 
         const { body } = req;
@@ -41,7 +42,7 @@ export const updateUser = (req: Request, res: Response, next: NextFunction) => {
         user.userStatus = body.userStatus || user.userStatus;
         user.username = body.username || user.username;
 
-        user.save(error => buildResponse(res, {}, HttpCode.NO_CONTENT));
+        user.save(error => buildResponse(res, HttpCode.NO_CONTENT));
     });
 };
 
@@ -49,9 +50,23 @@ export const deleteUser = (req: Request, res: Response, next: NextFunction) => {
     const username = req.params.username;
     UserModel.findOne({ username: username }, (err, user) => {
         if (!user) {
-            return buildResponse(res, {}, HttpCode.NOT_FOUND);
+            return buildResponse(res, HttpCode.NOT_FOUND);
         }
 
-        user.remove(error => buildResponse(res, {}, HttpCode.NO_CONTENT));
+        user.remove(error => buildResponse(res, HttpCode.NO_CONTENT));
+    });
+};
+
+export const login = (req: Request, res: Response, next: NextFunction) => {
+    const { username, password } = req.body;
+
+    UserModel.findOne({ username: username }, (err, user) => {
+        const isValid = bcrypt.compareSync(password, user.password);
+        if (!isValid) {
+            return buildResponse(res, HttpCode.UNAUTHORIZED);
+        }
+        const body = { id: user._id, email: user.email };
+        const token = jwt.sign({ user: body }, "my_token");
+        return buildResponse(res, HttpCode.OK, { token: token });
     });
 };
