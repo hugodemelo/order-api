@@ -1,3 +1,4 @@
+import * as bcrypt from "bcrypt";
 import * as chai from "chai";
 import chaiHttp = require("chai-http");
 import "mocha";
@@ -9,6 +10,7 @@ chai.use(chaiHttp);
 const expect = chai.expect;
 
 const user = {
+    _id: undefined,
     email: "me@me.com",
     firstName: "Hugo",
     lastName: "Melo",
@@ -22,6 +24,12 @@ describe("userRoute", () => {
     before(async () => {
         expect(UserModel.modelName).to.be.equal("User");
         UserModel.collection.drop();
+        
+        const newUser = new UserModel(user);
+        newUser.password = bcrypt.hashSync(newUser.password, 10);
+        await newUser.save((error, userCreated) => {
+            user._id = userCreated._id;
+        })
     });
     it("should respond with HTTP 404 since there is no user", async () => {
         return chai

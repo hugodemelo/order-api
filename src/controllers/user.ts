@@ -1,3 +1,4 @@
+import * as bcrypt from "bcrypt";
 import { NextFunction, Request, Response } from "express";
 import { UserModel } from "../schemas/user";
 import { buildResponse, HttpCode, LinkBuilder } from "../utils";
@@ -15,6 +16,8 @@ export const getUser = (req: Request, res: Response, next: NextFunction) => {
 
 export const addUser = (req: Request, res: Response, next: NextFunction) => {
     const newUser = new UserModel(req.body);
+
+    newUser.password = bcrypt.hashSync(newUser.password, 10);
     newUser.save((err, user) => {
         user = new LinkBuilder(user.toJSON()).rel("self").users().id(user.username).build();
         return buildResponse(res, user, HttpCode.CREATED);
