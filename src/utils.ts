@@ -24,43 +24,43 @@ export const buildResponse = (
     applicationType: ApplicationType = ApplicationType.JSON
 ): Response => {
     return res.format({
+        default: () => {
+            res.status(Number(HttpCode.NOT_ACCEPTABLE)).send();
+        },
         json: () => {
             res.type(applicationType);
             res.status(Number(statusCode)).send(data);
-        },
-        default: () => {
-            res.status(Number(HttpCode.NOT_ACCEPTABLE)).send();
         }
     });
 };
 
-export class LinkBuilder<T> {
+export class LinkBuilder<T extends {}> {
     private uri: string = "";
     private related: string = "";
 
     constructor(private readonly entity: T) {}
 
-    orders(): this {
+    public orders(): this {
         this.uri = this.uri.concat("/store/orders");
         return this;
     }
 
-    users(): this {
+    public users(): this {
         this.uri = this.uri.concat("/users");
         return this;
     }
 
-    id(id: string | number): this {
+    public id(id: string | number): this {
         this.uri = this.uri.concat(`/${id}`);
         return this;
     }
 
-    rel(rel: string): this {
+    public rel(rel: string): this {
         this.related = rel;
         return this;
     }
 
-    build(): T {
+    public build(): T {
         return halson(this.entity).addLink(this.related, this.uri);
     }
 }
