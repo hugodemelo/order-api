@@ -10,10 +10,15 @@ export const getOrder = (req: Request, res: Response, next: NextFunction) => {
         if (!order) {
             return buildResponse(res, {}, HttpCode.NOT_FOUND);
         }
-        order = order.toJSON();
-        order = new LinkBuilder(order).rel("self").orders().id(order.id).build();
-        order = new LinkBuilder(order).rel("user").users().id(order.userId).build();
-        return buildResponse(res, order, HttpCode.OK);
+        UserModel.findById(order.userId, (error, user) => {
+            if (!user) {
+                return buildResponse(res, {}, HttpCode.NOT_FOUND);
+            }
+            order = order.toJSON();
+            order = new LinkBuilder(order).rel("self").orders().id(order._id).build();
+            order = new LinkBuilder(order).rel("user").users().id(user.username).build();
+            return buildResponse(res, order, HttpCode.OK);
+        });
     })
 };
 

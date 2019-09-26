@@ -1,0 +1,30 @@
+# create user
+POST https://localhost:3000/users HTTP/1.1
+Content-Type: application/json
+
+{
+	"firstName": "Hugo",
+	"lastName": "Melo",
+	"username": "hsemog",
+	"userStatus": 1,
+	"email": "me@me.com",
+	"password": "password",
+	"phone": "12345"
+}
+
+# update user
+PATCH https://localhost:3000/users/hsemog HTTP/1.1
+Content-Type: application/json
+
+{
+	"firstName": "John",
+	"lastName": "Doe"
+}
+
+# get user
+GET https://localhost:3000/users/hsemog HTTP/1.1
+Content-Type: application/json
+
+# delete user
+DELETE https://localhost:3000/users/hsemog HTTP/1.1
+Content-Type: application/json

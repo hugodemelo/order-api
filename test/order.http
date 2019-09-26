@@ -1,0 +1,21 @@
+# create order
+POST https://localhost:3000/store/orders HTTP/1.1
+Content-Type: application/json
+
+{
+	"complete": false,
+    "quantity": 1,
+    "shipDate": "2019-09-25T10:39:34.226Z",
+    "status": "PLACED",
+    "userId": "5d8d0420a9b7d25406ef58e8"
+}
+
+
+
+# get all orders
+GET https://localhost:3000/store/orders HTTP/1.1
+Content-Type: application/json
+
+# get order
+GET https://localhost:3000/store/orders/5d8d042da9b7d25406ef58e9 HTTP/1.1
+Content-Type: application/json
