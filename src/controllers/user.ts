@@ -36,7 +36,7 @@ export const updateUser = (req: Request, res: Response, next: NextFunction) => {
         user.email = body.email || user.email;
         user.firstName = body.firstName || user.firstName;
         user.lastName = body.lastName || user.lastName;
-        user.password = body.password || user.password;
+        user.password = bcrypt.hashSync(body.password || user.password, 10);
         user.phone = body.phone || user.phone;
         user.userStatus = body.userStatus || user.userStatus;
         user.username = body.username || user.username;

@@ -24,12 +24,6 @@ describe("userRoute", () => {
     before(async () => {
         expect(UserModel.modelName).to.be.equal("User");
         UserModel.collection.drop();
-        
-        const newUser = new UserModel(user);
-        newUser.password = bcrypt.hashSync(newUser.password, 10);
-        await newUser.save((error, userCreated) => {
-            user._id = userCreated._id;
-        })
     });
     it("should respond with HTTP 404 since there is no user", async () => {
         return chai
@@ -60,7 +54,6 @@ describe("userRoute", () => {
         user.email = "john@doe.com";
         user.firstName = "John";
         user.lastName = "Doe";
-        user.password = "printer";
         user.phone = "87654321";
         user.userStatus = 10;
         user.username = "johndoe";
@@ -80,7 +73,6 @@ describe("userRoute", () => {
                 expect(res.body.email).to.be.equal(user.email);
                 expect(res.body.firstName).to.be.equal(user.firstName);
                 expect(res.body.lastName).to.be.equal(user.lastName);
-                expect(res.body.password).to.be.equal(user.password);
                 expect(res.body.phone).to.be.equal(user.phone);
                 expect(res.body.userStatus).to.be.equal(user.userStatus);
                 expect(res.body.username).to.be.equal(user.username);
