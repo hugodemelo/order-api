@@ -54,6 +54,7 @@ describe("userRoute", () => {
         user.email = "john@doe.com";
         user.firstName = "John";
         user.lastName = "Doe";
+        user.password = "printer";
         user.phone = "87654321";
         user.userStatus = 10;
         user.username = "johndoe";
@@ -73,6 +74,7 @@ describe("userRoute", () => {
                 expect(res.body.email).to.be.equal(user.email);
                 expect(res.body.firstName).to.be.equal(user.firstName);
                 expect(res.body.lastName).to.be.equal(user.lastName);
+                expect(bcrypt.compareSync(user.password, res.body.password)).to.be.equal(true);
                 expect(res.body.phone).to.be.equal(user.phone);
                 expect(res.body.userStatus).to.be.equal(user.userStatus);
                 expect(res.body.username).to.be.equal(user.username);
