@@ -41,10 +41,13 @@
     "typescript": "^3.2.1"
   },
   "dependencies": {
+    "apollo-server-express": "^2.9.4",
     "bcrypt": "^3.0.6",
     "body-parser": "^1.18.3",
     "chai-http": "^4.2.1",
     "express": "^4.16.4",
+    "graphql": "^14.5.8",
+    "graphql-tools": "^4.0.5",
     "halson": "^3.0.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.7.1",
