@@ -5,11 +5,13 @@ import { TypeDefs } from "./typeDefs";
 
 export class GraphQL {
     private apollo: ApolloServer;
+    private resolvers: Resolvers = new Resolvers();
+    private typeDefs: TypeDefs = new TypeDefs();
 
     constructor() {
         this.apollo = new ApolloServer({
-            resolvers: Resolvers,
-            typeDefs: TypeDefs
+            resolvers: this.resolvers.getResolvers(),
+            typeDefs: this.typeDefs.getTypeDefs()
         });
     }
 
