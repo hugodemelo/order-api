@@ -41,7 +41,7 @@
     "typescript": "^3.2.1"
   },
   "dependencies": {
-    "apollo-server-express": "^2.9.4",
+    "apollo-server-express": "^2.14.2",
     "bcrypt": "^3.0.6",
     "body-parser": "^1.18.3",
     "chai-http": "^4.2.1",
